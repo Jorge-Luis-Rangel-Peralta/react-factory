@@ -6,3 +6,7 @@ export const Frame = styled.div`
     display: grid;
     grid-template-columns: 200px 1fr;
 `
+
+export const ViewFrame = styled.div`
+    position: relative;
+`

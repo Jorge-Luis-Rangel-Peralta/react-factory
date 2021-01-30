@@ -1,10 +1,10 @@
 import React from 'react'
-import { Cell, CellTypes } from '../../types/CellTypes'
+import { CellType, CellTypes } from '../../types/CellTypes'
 import EmptyCell from '../EmptyCell'
 import ConveyorCell from '../ConveyorCell'
 
 type Props = {
-    cell: Cell;
+    cell: CellType;
 }
 
 const CellSwicher: React.FC<Props> = ({

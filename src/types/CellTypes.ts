@@ -23,4 +23,4 @@ export type ConveyorCellType = BaseCell & {
     direction: CellDirections;
 }
 
-export type Cell = EmptyCellType | ConveyorCellType
+export type CellType = EmptyCellType | ConveyorCellType

@@ -9,6 +9,7 @@ const CellsGrid = styled.div`
     background-color: #f1f1f1;
     display: flex;
     flex-direction: column;
+    position: absolute;
 `
 
 export default CellsGrid

@@ -1,4 +1,4 @@
-import { Cell, CellDirections, CellTypes, ConveyorCellType, EmptyCellType } from "./types/CellTypes";
+import { CellDirections, CellTypes, ConveyorCellType, EmptyCellType } from "../types/CellTypes";
 
 export const emptyCell: EmptyCellType = {
     type: CellTypes.EMPTY,
@@ -27,25 +27,4 @@ export const conveyorRigth: ConveyorCellType = {
     type: CellTypes.CONVEYOR,
     direction: CellDirections.RIGHT,
     energyConsumption: 1,
-}
-
-type BuildEmptyGridArgs = {
-    columns: number;
-    rows: number;
-}
-
-export const buildEmptyGrid = ({ columns, rows }: BuildEmptyGridArgs) => {
-    const grid: Cell[][] = []
-
-    for (let rowNumber = 0; rowNumber < rows; rowNumber += 1) {
-        const row: Cell[] = []
-
-        for (let columnNumber = 0; columnNumber < columns; columnNumber += 1) {
-            row.push(emptyCell)
-        }
-
-        grid.push(row)
-    }
-
-    return grid
 }

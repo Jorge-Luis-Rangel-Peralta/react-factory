@@ -1,5 +1,5 @@
 import React from 'react'
-import { Frame } from './style'
+import { Frame, ViewFrame } from './style'
 
 type Props = {
     slotTools?: React.ReactNode;
@@ -12,7 +12,7 @@ const AppFrame: React.FC<Props> = ({
 }) => (
     <Frame>
         <div>{slotTools}</div>
-        <div>{slotView}</div>
+        <ViewFrame>{slotView}</ViewFrame>
     </Frame>
 )
 

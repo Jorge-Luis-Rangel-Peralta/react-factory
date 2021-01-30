@@ -2,14 +2,19 @@ import React from 'react'
 import AppFrame from './components/AppFrame'
 import CellsGrid from './components/CellsGrid'
 import CellsRow from './components/CellsRow'
-import EmptyCell from './components/EmptyCell'
+import CellSwicher from './components/CellSwitcher'
+import { Cell } from './types/CellTypes'
 
-const grid = [
-  [{}, {}, {}],
-  [{}, {}, {}],
-  [{}, {}, {}],
-  [{}, {}, {}],
-  [{}, {}, {}],
+const emptyCell = {
+  type: 'empty'
+} as const
+
+const grid: Cell[][] = [
+  [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
+  [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
+  [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
+  [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
+  [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
 ]
 
 const App = () => (
@@ -19,7 +24,7 @@ const App = () => (
         {grid.map((row) => (
           <CellsRow>
             {row.map((cell) => (
-              <EmptyCell />
+              <CellSwicher cell={cell} />
             ))}
           </CellsRow>
         ))}

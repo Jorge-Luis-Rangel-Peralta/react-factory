@@ -1,8 +1,7 @@
 import styled from 'styled-components'
+import CellBase from '../CellBase'
 
-const EmptyCell = styled.div`
-    width: 60px;
-    height: 60px;
+const EmptyCell = styled(CellBase)`
     background-color: aliceblue;
     border-style: dotted;
     border-width: 1px;

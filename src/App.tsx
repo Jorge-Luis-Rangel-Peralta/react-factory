@@ -3,14 +3,24 @@ import AppFrame from './components/AppFrame'
 import CellsGrid from './components/CellsGrid'
 import CellsRow from './components/CellsRow'
 import CellSwicher from './components/CellSwitcher'
-import { Cell } from './types/CellTypes'
+import {
+  Cell,
+  ConveyorCell,
+  CellDirections,
+  CellTypes,
+} from './types/CellTypes'
+
+const conveyor: ConveyorCell = {
+  type: CellTypes.CONVEYOR,
+  direction: CellDirections.RIGHT,
+}
 
 const emptyCell = {
-  type: 'empty'
+  type: CellTypes.EMPTY,
 } as const
 
 const grid: Cell[][] = [
-  [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
+  [emptyCell, emptyCell, conveyor, emptyCell, emptyCell],
   [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
   [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],
   [emptyCell, emptyCell, emptyCell, emptyCell, emptyCell],

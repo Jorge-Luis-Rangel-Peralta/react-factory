@@ -1,15 +1,10 @@
 import styled from 'styled-components'
 import { CellDirections } from '../../types/CellTypes'
-import CellBase from '../CellBase'
+import CellBaseWithImage from '../CellBaseWithImage'
 
-export const Frame = styled(CellBase)<{
+export const Frame = styled(CellBaseWithImage)<{
     direction: CellDirections;
 }>`
-    background-color: lightgray;
-    border-style: dotted;
-    border-width: 1px;
-    background-image: url(textures/conveyor.png);
-    background-size: contain;
     transform: rotate(${({ direction }) => {
         switch (direction) {
         case CellDirections.UP:

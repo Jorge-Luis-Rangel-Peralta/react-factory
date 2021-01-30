@@ -9,8 +9,10 @@ type Props = {
 const ConveyorCell: React.FC<Props> = ({
     cell,
 }) => (
-    <Frame direction={cell.direction}>
-    </Frame>
+    <Frame
+        direction={cell.direction}
+        imageUrl="textures/conveyor.png"
+    />
 )
 
 export default ConveyorCell

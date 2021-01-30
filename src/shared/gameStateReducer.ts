@@ -28,7 +28,7 @@ const gameStateReducer = (
 
         return {
             ...state,
-            energy: energyAfterConsumption,
+            energy: energyAfterConsumption >= 0 ? energyAfterConsumption : 0,
         }
     default:
         throw new Error(`Invalid action type`)

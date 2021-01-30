@@ -2,7 +2,7 @@ import { buildEmptyGrid } from "./buildEmptyGrid";
 import { GameStateType } from "./gameStateReducer";
 
 const initialState: GameStateType = {
-    energy: 100,
+    energy: 0,
     grid: buildEmptyGrid({
         columns: 20,
         rows: 20,

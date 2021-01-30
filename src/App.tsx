@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react'
+import AppFrame from './components/AppFrame'
 
 const App = () => (
-  <div className="App">
-  </div>
+  <AppFrame />
 )
 
 export default App;

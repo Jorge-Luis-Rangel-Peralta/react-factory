@@ -10,13 +10,13 @@ export enum CellDirections {
     RIGHT,
 }
 
-export type EmptyCell = {
+export type EmptyCellType = {
     type: CellTypes.EMPTY;
 }
 
-export type ConveyorCell = {
+export type ConveyorCellType = {
     type: CellTypes.CONVEYOR;
     direction: CellDirections;
 }
 
-export type Cell = EmptyCell | ConveyorCell
+export type Cell = EmptyCellType | ConveyorCellType

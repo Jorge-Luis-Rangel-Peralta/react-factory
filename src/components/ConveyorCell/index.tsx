@@ -1,10 +1,16 @@
-import styled from 'styled-components'
-import CellBase from '../CellBase'
+import React from 'react'
+import { ConveyorCellType } from '../../types/CellTypes'
+import { Frame } from './style'
 
-const ConveyorCell = styled(CellBase)`
-    background-color: black;
-    border-style: dotted;
-    border-width: 1px;
-`
+type Props = {
+    cell: ConveyorCellType;
+}
+
+const ConveyorCell: React.FC<Props> = ({
+    cell,
+}) => (
+    <Frame direction={cell.direction}>
+    </Frame>
+)
 
 export default ConveyorCell

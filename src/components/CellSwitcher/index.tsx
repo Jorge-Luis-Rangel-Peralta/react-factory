@@ -12,7 +12,7 @@ const CellSwicher: React.FC<Props> = ({
 }) => {
     switch (cell.type) {
     case CellTypes.CONVEYOR:
-        return <ConveyorCell />
+        return <ConveyorCell cell={cell} />
     default:
         return <EmptyCell />
     }

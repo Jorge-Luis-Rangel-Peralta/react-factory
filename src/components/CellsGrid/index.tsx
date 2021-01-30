@@ -6,7 +6,7 @@ const CellsGrid = styled.div`
     max-width: 100%;
     max-height: 100%;
     overflow: scroll;
-    background-color: lightgray;
+    background-color: #f1f1f1;
     display: flex;
     flex-direction: column;
 `

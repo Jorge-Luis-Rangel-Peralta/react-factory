@@ -1,8 +1,9 @@
 import { buildEmptyGrid } from "./buildEmptyGrid";
-import { GameStateType } from "./gameStateReducer";
+import { GameStateType, UiStatesEnum } from "./gameStateReducer";
 
 const initialState: GameStateType = {
-    energy: 0,
+    money: 1000,
+    uiState: UiStatesEnum.IDLE,
     grid: buildEmptyGrid({
         columns: 20,
         rows: 20,

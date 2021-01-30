@@ -1,8 +1,14 @@
 import { CellType } from "../types/CellTypes"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
 
+export enum UiStatesEnum {
+    IDLE,
+    ADD_CELL,
+}
+
 export type GameStateType = {
-    energy: number;
+    money: number;
+    uiState: UiStatesEnum;
     grid: CellType[][];
 }
 
@@ -12,10 +18,6 @@ const gameStateReducer = (
 ): GameStateType => {
     switch (action.type) {
     case ActionTypeEnum.CLOCK_TICK:
-        if (state.energy === 0) {
-            return state
-        }
-
         const energyConsumed = state.grid.reduce((total, row) => {
             let newTotal = total
             row.forEach((cell) => {
@@ -24,12 +26,11 @@ const gameStateReducer = (
             return newTotal
         }, 0)
 
-        const energyAfterConsumption = state.energy - energyConsumed
+        console.log('energyConsumed', energyConsumed)
 
-        return {
-            ...state,
-            energy: energyAfterConsumption >= 0 ? energyAfterConsumption : 0,
-        }
+        return state
+    case ActionTypeEnum.CELL_CLICKED:
+        return state
     default:
         throw new Error(`Invalid action type`)
     }

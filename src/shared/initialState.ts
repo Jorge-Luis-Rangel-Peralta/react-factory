@@ -9,6 +9,7 @@ const initialState: GameStateType = {
         rows: 20,
     }),
     generators: [],
+    batteries: [],
 }
 
 export default initialState

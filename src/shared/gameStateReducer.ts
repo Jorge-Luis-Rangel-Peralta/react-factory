@@ -1,4 +1,4 @@
-import { CellType, CellTypes, GasGeneratorCellType } from "../types/CellTypes"
+import { BatteryCellType, CellType, CellTypes, GasGeneratorCellType } from "../types/CellTypes"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
 import replaceGridCell from "./replaceGridCell"
 
@@ -15,6 +15,7 @@ export type GameStateType = {
     cellToAdd?: CellType;
     grid: CellType[][];
     generators: CellCoordinates<GasGeneratorCellType>[];
+    batteries: CellCoordinates<BatteryCellType>[];
 }
 
 const gameStateReducer = (
@@ -62,6 +63,17 @@ const gameStateReducer = (
                 ]
             }
 
+            if (cellToAdd.type === CellTypes.BATTERY) {
+                newState.batteries = [
+                    ...newState.batteries,
+                    {
+                        cell: cellToAdd,
+                        column: action.payload.column,
+                        row: action.payload.row,
+                    },
+                ]
+            }
+
             return newState
         }
         return state
@@ -98,39 +110,52 @@ const gameStateReducer = (
             }
         })
 
-        grid = state.grid.map((row) => row.map((cell) => {
-            if (
-                cell.type !== CellTypes.BATTERY
-                || energyGenerated === 0
-                || cell.currentEnergy === cell.capacity 
-            ) {
-                return cell
+        const batteries = state.batteries.map((coordinate) => {
+            const battery = coordinate.cell
+
+            if (energyGenerated === 0 || battery.currentEnergy === battery.capacity) {
+                return coordinate
             }
 
-            const needdedToFill = cell.capacity - cell.currentEnergy
+            const energyNeeddedToFill = battery.capacity - battery.currentEnergy
 
-            if (needdedToFill > energyGenerated) {
-                const chargedBattery = {
-                    ...cell,
-                    currentEnergy: cell.currentEnergy + energyGenerated,
+            let chargedBattery
+            if (energyNeeddedToFill > energyGenerated) {
+                chargedBattery = {
+                    ...battery,
+                    currentEnergy: battery.currentEnergy + energyGenerated,
                 }
                 energyGenerated = 0
-                return chargedBattery
+            } else {
+                chargedBattery = {
+                    ...battery,
+                    currentEnergy: battery.capacity,
+                }
+    
+                energyGenerated -= energyNeeddedToFill
             }
 
-            energyGenerated -= needdedToFill
+            grid = replaceGridCell({
+                column: coordinate.column,
+                row: coordinate.row,
+                grid,
+                newCell: chargedBattery,
+            })
 
-            const chargedBattery = {
-                ...cell,
-                currentEnergy: cell.capacity,
+            return {
+                ...coordinate,
+                cell: chargedBattery,
             }
-            return chargedBattery
-        }))
+        })
+
+        console.log('energyGenerated', energyGenerated)
+        console.log('energyOnBatteries', batteries.reduce((total, battery) => battery.cell.currentEnergy + total, 0))
 
         return {
             ...state,
             grid,
             generators,
+            batteries,
         }
     default:
         throw new Error(`Invalid action type`)

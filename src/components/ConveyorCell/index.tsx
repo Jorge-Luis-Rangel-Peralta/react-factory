@@ -4,14 +4,17 @@ import { Frame } from './style'
 
 type Props = {
     cell: ConveyorCellType;
+    onClick?: () => void;
 }
 
 const ConveyorCell: React.FC<Props> = ({
     cell,
+    onClick,
 }) => (
     <Frame
         direction={cell.direction}
         imageUrl="textures/conveyor.png"
+        onClick={onClick}
     />
 )
 

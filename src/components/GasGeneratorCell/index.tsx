@@ -4,13 +4,16 @@ import { GasGeneratorCellType } from '../../types/CellTypes'
 
 type Props = {
     cell: GasGeneratorCellType;
+    onClick?: () => void;
 }
 
 const GasGeneratorCell: React.FC<Props> = ({
     cell,
+    onClick,
 }) => (
     <CellBaseWithImage
         imageUrl="textures/basicGasGenerator.png"
+        onClick={onClick}
     />
 )
 

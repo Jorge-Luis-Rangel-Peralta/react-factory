@@ -7,20 +7,22 @@ import GasGeneratorCell from '../GasGeneratorCell'
 
 type Props = {
     cell: CellType;
+    onClick?: () => void;
 }
 
 const CellSwicher: React.FC<Props> = ({
     cell,
+    onClick,
 }) => {
     switch (cell.type) {
     case CellTypes.CONVEYOR:
-        return <ConveyorCell cell={cell} />
+        return <ConveyorCell cell={cell} onClick={onClick} />
     case CellTypes.EMPTY:
-        return <EmptyCell />
+        return <EmptyCell onClick={onClick} />
     case CellTypes.GAS_GENERATOR:
-        return <GasGeneratorCell cell={cell} />
+        return <GasGeneratorCell cell={cell} onClick={onClick} />
     default:
-        return <ErrorCell />
+        return <ErrorCell onClick={onClick} />
     }
 }
 

@@ -9,6 +9,7 @@ export enum UiStatesEnum {
 export type GameStateType = {
     money: number;
     uiState: UiStatesEnum;
+    cellToAdd?: CellType;
     grid: CellType[][];
 }
 
@@ -17,6 +18,18 @@ const gameStateReducer = (
     action: GameStateAction,
 ): GameStateType => {
     switch (action.type) {
+    case ActionTypeEnum.PREPARE_CELL_TO_BE_ADDED:
+        if (state.uiState !== UiStatesEnum.IDLE) {
+            return state
+        }
+        return {
+            ...state,
+            uiState: UiStatesEnum.ADD_CELL,
+            cellToAdd: action.payload,
+        }
+    case ActionTypeEnum.CELL_CLICKED:
+        console.log('Here!')
+        return state
     case ActionTypeEnum.CLOCK_TICK:
         const energyConsumed = state.grid.reduce((total, row) => {
             let newTotal = total
@@ -28,8 +41,6 @@ const gameStateReducer = (
 
         console.log('energyConsumed', energyConsumed)
 
-        return state
-    case ActionTypeEnum.CELL_CLICKED:
         return state
     default:
         throw new Error(`Invalid action type`)

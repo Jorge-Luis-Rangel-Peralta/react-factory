@@ -1,4 +1,4 @@
-import { CellType } from "../types/CellTypes"
+import { CellType, CellTypes } from "../types/CellTypes"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
 
 export enum UiStatesEnum {
@@ -28,7 +28,29 @@ const gameStateReducer = (
             cellToAdd: action.payload,
         }
     case ActionTypeEnum.CELL_CLICKED:
-        console.log('Here!')
+        const { cellToAdd } = state
+        if (
+            state.uiState === UiStatesEnum.ADD_CELL
+            && cellToAdd
+            && action.payload.cell.type === CellTypes.EMPTY
+            && state.money >= cellToAdd.price
+        ) {
+            return {
+                ...state,
+                money: state.money - cellToAdd.price,
+                grid: state.grid.map((row, rowIndex) => {
+                    if (rowIndex !== action.payload.row) {
+                        return row
+                    }
+                    return row.map((internalCell, columnIndex) => {
+                        if (columnIndex !== action.payload.column) {
+                            return internalCell
+                        }
+                        return cellToAdd
+                    })
+                }),
+            }
+        }
         return state
     case ActionTypeEnum.CLOCK_TICK:
         const energyConsumed = state.grid.reduce((total, row) => {

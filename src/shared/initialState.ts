@@ -8,6 +8,7 @@ const initialState: GameStateType = {
         columns: 20,
         rows: 20,
     }),
+    generators: [],
 }
 
 export default initialState

@@ -1,16 +1,20 @@
-import { CellType, CellTypes } from "../types/CellTypes"
+import { CellType, CellTypes, GasGeneratorCellType } from "../types/CellTypes"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
+import replaceGridCell from "./replaceGridCell"
 
 export enum UiStatesEnum {
     IDLE,
     ADD_CELL,
 }
 
+type CellCoordinates<T extends CellType> = { row: number; column: number; cell: T }
+
 export type GameStateType = {
     money: number;
     uiState: UiStatesEnum;
     cellToAdd?: CellType;
     grid: CellType[][];
+    generators: CellCoordinates<GasGeneratorCellType>[];
 }
 
 const gameStateReducer = (
@@ -35,50 +39,98 @@ const gameStateReducer = (
             && action.payload.cell.type === CellTypes.EMPTY
             && state.money >= cellToAdd.price
         ) {
-            return {
+            const newState = {
                 ...state,
                 uiState: UiStatesEnum.IDLE,
                 money: state.money - cellToAdd.price,
-                grid: state.grid.map((row, rowIndex) => {
-                    if (rowIndex !== action.payload.row) {
-                        return row
-                    }
-                    return row.map((internalCell, columnIndex) => {
-                        if (columnIndex !== action.payload.column) {
-                            return internalCell
-                        }
-                        return cellToAdd
-                    })
-                }),
+                grid: replaceGridCell({
+                    column: action.payload.column,
+                    row: action.payload.row,
+                    grid: state.grid,
+                    newCell: cellToAdd,
+                })
             }
+
+            if (cellToAdd.type === CellTypes.GAS_GENERATOR) {
+                newState.generators = [
+                    ...newState.generators,
+                    {
+                        cell: cellToAdd,
+                        column: action.payload.column,
+                        row: action.payload.row,
+                    },
+                ]
+            }
+
+            return newState
         }
         return state
     case ActionTypeEnum.CLOCK_TICK:
         let energyGenerated = 0
 
-        const grid = state.grid.map((row) => row.map((cell) => {
-            switch (cell.type) {
-            case CellTypes.GAS_GENERATOR:
-                if (cell.gas < 0) {
-                    break
-                }
-                console.log('generator gas', cell.gas)
-                const energyGeneratedByThis = cell.energyGeneratedPerGasUnit * cell.gasBurnedPerTick
-                energyGenerated += energyGeneratedByThis
+        let grid = state.grid
 
-                return {
-                    ...cell,
-                    gas: cell.gas - cell.gasBurnedPerTick
-                }
+        const generators = state.generators.map((coordinate) => {
+            const generator = coordinate.cell
+            if (generator.gas < 0) {
+                return coordinate
             }
-            return cell
-        }))
 
-        console.log('energyGenerated', energyGenerated)
+            const energyGeneratedByThis = generator.energyGeneratedPerGasUnit
+                * generator.gasBurnedPerTick
+            energyGenerated += energyGeneratedByThis
+
+            const newGenerator = {
+                ...generator,
+                gas: generator.gas - generator.gasBurnedPerTick
+            }
+
+            grid = replaceGridCell({
+                column: coordinate.column,
+                row: coordinate.row,
+                newCell: newGenerator,
+                grid,
+            })
+
+            return {
+                ...coordinate,
+                cell: newGenerator,
+            }
+        })
+
+        grid = state.grid.map((row) => row.map((cell) => {
+            if (
+                cell.type !== CellTypes.BATTERY
+                || energyGenerated === 0
+                || cell.currentEnergy === cell.capacity 
+            ) {
+                return cell
+            }
+
+            const needdedToFill = cell.capacity - cell.currentEnergy
+
+            if (needdedToFill > energyGenerated) {
+                const chargedBattery = {
+                    ...cell,
+                    currentEnergy: cell.currentEnergy + energyGenerated,
+                }
+                energyGenerated = 0
+                return chargedBattery
+            }
+
+            energyGenerated -= needdedToFill
+
+            const chargedBattery = {
+                ...cell,
+                currentEnergy: cell.capacity,
+            }
+            return chargedBattery
+        }))
 
         return {
             ...state,
             grid,
+            generators,
         }
     default:
         throw new Error(`Invalid action type`)

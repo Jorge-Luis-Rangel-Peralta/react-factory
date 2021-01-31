@@ -37,6 +37,7 @@ export type GasGeneratorCellType = BaseCell & {
 export type BatteryCellType = BaseCell & {
     type: CellTypes.BATTERY;
     capacity: number;
+    currentEnergy: number;
 }
 
 export type CellType = EmptyCellType

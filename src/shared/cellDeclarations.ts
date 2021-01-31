@@ -56,4 +56,5 @@ export const basicBattery: BatteryCellType = {
     type: CellTypes.BATTERY,
     energyConsumption: 0,
     capacity: 100,
+    currentEnergy: 0,
 }

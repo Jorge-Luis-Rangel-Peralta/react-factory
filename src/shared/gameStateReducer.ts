@@ -37,6 +37,7 @@ const gameStateReducer = (
         ) {
             return {
                 ...state,
+                uiState: UiStatesEnum.IDLE,
                 money: state.money - cellToAdd.price,
                 grid: state.grid.map((row, rowIndex) => {
                     if (rowIndex !== action.payload.row) {
@@ -53,17 +54,32 @@ const gameStateReducer = (
         }
         return state
     case ActionTypeEnum.CLOCK_TICK:
-        const energyConsumed = state.grid.reduce((total, row) => {
-            let newTotal = total
-            row.forEach((cell) => {
-                newTotal = newTotal + cell.energyConsumption
-            })
-            return newTotal
-        }, 0)
+        let energyGenerated = 0
 
-        console.log('energyConsumed', energyConsumed)
+        const grid = state.grid.map((row) => row.map((cell) => {
+            switch (cell.type) {
+            case CellTypes.GAS_GENERATOR:
+                if (cell.gas < 0) {
+                    break
+                }
+                console.log('generator gas', cell.gas)
+                const energyGeneratedByThis = cell.energyGeneratedPerGasUnit * cell.gasBurnedPerTick
+                energyGenerated += energyGeneratedByThis
 
-        return state
+                return {
+                    ...cell,
+                    gas: cell.gas - cell.gasBurnedPerTick
+                }
+            }
+            return cell
+        }))
+
+        console.log('energyGenerated', energyGenerated)
+
+        return {
+            ...state,
+            grid,
+        }
     default:
         throw new Error(`Invalid action type`)
     }

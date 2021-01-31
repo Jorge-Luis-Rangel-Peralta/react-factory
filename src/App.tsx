@@ -4,7 +4,7 @@ import CellsGrid from './components/CellsGrid'
 import CellsRow from './components/CellsRow'
 import CellSwicher from './components/CellSwitcher'
 import ToolsFrame from './components/ToolsFrame'
-import { basicGasGenerator, conveyorRigth } from './shared/cellDeclarations'
+import { basicBattery, basicGasGenerator, conveyorRigth } from './shared/cellDeclarations'
 import { cellClickedActionBuilder, CellClickedPayload, prepareCellToAddActionBuilder } from './shared/gameStateActions'
 import { startTicking } from './shared/gameClock'
 import gameStateReducer from './shared/gameStateReducer'
@@ -36,6 +36,10 @@ const App = () => {
                         <CellSwicher
                             cell={basicGasGenerator}
                             onClick={() => prepareCellToAdd(basicGasGenerator)}
+                        />
+                        <CellSwicher
+                            cell={basicBattery}
+                            onClick={() => prepareCellToAdd(basicBattery)}
                         />
                     </div>
                 </ToolsFrame>

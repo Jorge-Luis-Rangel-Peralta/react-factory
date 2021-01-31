@@ -10,13 +10,13 @@ import {
 export const emptyCell: EmptyCellType = {
     price: 0,
     type: CellTypes.EMPTY,
-    energyConsumption: 0,
 }
 
 export const conveyorUp: ConveyorCellType = {
     price: 10,
     type: CellTypes.CONVEYOR,
     direction: CellDirections.UP,
+    isOn: true,
     energyConsumption: 1,
 }
 
@@ -24,6 +24,7 @@ export const conveyorDown: ConveyorCellType = {
     price: 10,
     type: CellTypes.CONVEYOR,
     direction: CellDirections.DOWN,
+    isOn: true,
     energyConsumption: 1,
 }
 
@@ -31,6 +32,7 @@ export const conveyorLeft: ConveyorCellType = {
     price: 10,
     type: CellTypes.CONVEYOR,
     direction: CellDirections.LEFT,
+    isOn: true,
     energyConsumption: 1,
 }
 
@@ -38,13 +40,13 @@ export const conveyorRigth: ConveyorCellType = {
     price: 10,
     type: CellTypes.CONVEYOR,
     energyConsumption: 1,
+    isOn: true,
     direction: CellDirections.RIGHT,
 }
 
 export const basicGasGenerator: GasGeneratorCellType = {
     price: 500,
     type: CellTypes.GAS_GENERATOR,
-    energyConsumption: 0,
     gas: 1000,
     gasCapacity: 1000,
     gasBurnedPerTick: 1,
@@ -54,7 +56,6 @@ export const basicGasGenerator: GasGeneratorCellType = {
 export const basicBattery: BatteryCellType = {
     price: 500,
     type: CellTypes.BATTERY,
-    energyConsumption: 0,
     capacity: 20,
     currentEnergy: 0,
 }

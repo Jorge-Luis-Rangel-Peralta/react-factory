@@ -13,6 +13,7 @@ const BatteryCell: React.FC<Props> = ({
 }) => (
     <CellBaseWithImage
         imageUrl="textures/basicBattery.png"
+        isOn
         onClick={onClick}
     />
 )

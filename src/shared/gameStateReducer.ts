@@ -1,4 +1,4 @@
-import { BatteryCellType, CellType, CellTypes, GasGeneratorCellType } from "../types/CellTypes"
+import { BatteryCellType, CellType, CellTypes, ConveyorCellType, GasGeneratorCellType } from "../types/CellTypes"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
 import replaceGridCell from "./replaceGridCell"
 
@@ -7,15 +7,21 @@ export enum UiStatesEnum {
     ADD_CELL,
 }
 
-type CellCoordinates<T extends CellType> = { row: number; column: number; cell: T }
+type CellCoordinate<T extends CellType> = { row: number; column: number; cell: T }
+
+const addCoordinate = <T extends CellType>(coordinates: CellCoordinate<T>[]) => (coordinate: CellCoordinate<T>) => [
+    ...coordinates,
+    coordinate,
+]
 
 export type GameStateType = {
     money: number;
     uiState: UiStatesEnum;
     cellToAdd?: CellType;
     grid: CellType[][];
-    generators: CellCoordinates<GasGeneratorCellType>[];
-    batteries: CellCoordinates<BatteryCellType>[];
+    generators: CellCoordinate<GasGeneratorCellType>[];
+    batteries: CellCoordinate<BatteryCellType>[];
+    conveyors: CellCoordinate<ConveyorCellType>[];
 }
 
 const gameStateReducer = (
@@ -52,26 +58,30 @@ const gameStateReducer = (
                 })
             }
 
-            if (cellToAdd.type === CellTypes.GAS_GENERATOR) {
-                newState.generators = [
-                    ...newState.generators,
-                    {
-                        cell: cellToAdd,
-                        column: action.payload.column,
-                        row: action.payload.row,
-                    },
-                ]
-            }
-
-            if (cellToAdd.type === CellTypes.BATTERY) {
-                newState.batteries = [
-                    ...newState.batteries,
-                    {
-                        cell: cellToAdd,
-                        column: action.payload.column,
-                        row: action.payload.row,
-                    },
-                ]
+            switch (cellToAdd.type) {
+            case CellTypes.GAS_GENERATOR:
+                newState.generators = addCoordinate(newState.generators)({
+                    cell: cellToAdd,
+                    column: action.payload.column,
+                    row: action.payload.row,
+                })
+                break
+            case CellTypes.BATTERY:
+                newState.batteries = addCoordinate(newState.batteries)({
+                    cell: cellToAdd,
+                    column: action.payload.column,
+                    row: action.payload.row,
+                })
+                break
+            case CellTypes.CONVEYOR:
+                newState.conveyors = addCoordinate(newState.conveyors)({
+                    cell: cellToAdd,
+                    column: action.payload.column,
+                    row: action.payload.row,
+                })
+                break
+            default:
+                return state
             }
 
             return newState
@@ -110,7 +120,7 @@ const gameStateReducer = (
             }
         })
 
-        const batteries = state.batteries.map((coordinate) => {
+        let batteries = state.batteries.map((coordinate) => {
             const battery = coordinate.cell
 
             if (energyGenerated === 0 || battery.currentEnergy === battery.capacity) {
@@ -148,14 +158,88 @@ const gameStateReducer = (
             }
         })
 
+        const getBatteryEnergy = () => batteries
+            .reduce((total, battery) => battery.cell.currentEnergy + total, 0)
+
+        const getEnergyFromBatteries = (energy: number) => {
+            let energyLeftToRemove = energy
+            batteries = batteries.map((coordinate) => {
+                if (energyLeftToRemove === 0) {
+                    return coordinate
+                }
+
+                let battery = coordinate.cell
+
+                if (energyLeftToRemove >= battery.currentEnergy) {
+                    energyLeftToRemove -= battery.currentEnergy
+                    battery = {
+                        ...battery,
+                        currentEnergy: 0,
+                    }
+                } else {
+                    battery = {
+                        ...battery,
+                        currentEnergy: battery.currentEnergy - energyLeftToRemove,
+                    }
+                    energyLeftToRemove = 0
+                }
+
+                grid = replaceGridCell({
+                    column: coordinate.column,
+                    row: coordinate.row,
+                    grid,
+                    newCell: battery,
+                })
+
+                return {
+                    ...coordinate,
+                    cell: battery,
+                }
+            })
+        }
+
         console.log('energyGenerated', energyGenerated)
-        console.log('energyOnBatteries', batteries.reduce((total, battery) => battery.cell.currentEnergy + total, 0))
+        console.log('energyOnBatteries', getBatteryEnergy())
+
+        const conveyors = state.conveyors.map((coordinate) => {
+            let conveyor = coordinate.cell
+            if (energyGenerated >= conveyor.energyConsumption) {
+                energyGenerated -= conveyor.energyConsumption
+                if (!conveyor.isOn) {
+                    conveyor = { ...conveyor, isOn: true }
+                }
+            } else if (getBatteryEnergy() >= conveyor.energyConsumption) {
+                getEnergyFromBatteries(conveyor.energyConsumption)
+                if (!conveyor.isOn) {
+                    conveyor = { ...conveyor, isOn: true }
+                }
+            } else if (conveyor.isOn) {
+                conveyor = { ...conveyor, isOn: false }
+            }
+
+            if (coordinate.cell !== conveyor) {
+                grid = replaceGridCell({
+                    column: coordinate.column,
+                    row: coordinate.row,
+                    grid,
+                    newCell: conveyor,
+                })
+
+                return {
+                    ...coordinate,
+                    cell: conveyor,
+                }
+            } else {
+                return coordinate
+            }
+        })
 
         return {
             ...state,
             grid,
             generators,
             batteries,
+            conveyors,
         }
     default:
         throw new Error(`Invalid action type`)

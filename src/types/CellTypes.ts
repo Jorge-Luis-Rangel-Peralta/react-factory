@@ -14,6 +14,10 @@ export enum CellDirections {
 
 type BaseCell = {
     price: number;
+}
+
+type BaseConsumingCell = BaseCell & {
+    isOn: boolean;
     energyConsumption: number;
 }
 
@@ -21,7 +25,7 @@ export type EmptyCellType = BaseCell & {
     type: CellTypes.EMPTY;
 }
 
-export type ConveyorCellType = BaseCell & {
+export type ConveyorCellType = BaseConsumingCell & {
     type: CellTypes.CONVEYOR;
     direction: CellDirections;
 }

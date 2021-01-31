@@ -32,7 +32,10 @@ const App = () => {
                 <ToolsFrame>
                     <div>Money: {state.money}</div>
                     <div>
-                        <CellSwicher cell={conveyorRigth} />
+                        <CellSwicher
+                            cell={conveyorRigth}
+                            onClick={() => prepareCellToAdd(conveyorRigth)}
+                        />
                         <CellSwicher
                             cell={basicGasGenerator}
                             onClick={() => prepareCellToAdd(basicGasGenerator)}

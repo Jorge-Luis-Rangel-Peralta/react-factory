@@ -13,6 +13,7 @@ const GasGeneratorCell: React.FC<Props> = ({
 }) => (
     <CellBaseWithImage
         imageUrl="textures/basicGasGenerator.png"
+        isOn
         onClick={onClick}
     />
 )

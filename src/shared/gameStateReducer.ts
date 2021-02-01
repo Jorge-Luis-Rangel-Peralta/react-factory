@@ -1,6 +1,7 @@
 import { CellCoordinate, BaseConsumingCell, BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType, DrillCellType, CellDirections } from "../types/CellTypes"
 import cellIsContainerCell from "./cellIsContainerCell"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
+import putCoordinate from "./putCoordinate"
 import replaceGridCell from "./replaceGridCell"
 
 export enum UiStatesEnum {
@@ -8,7 +9,7 @@ export enum UiStatesEnum {
     ADD_CELL,
 }
 
-const addCoordinate = <T extends CellType>(coordinates: CellCoordinate<T>[]) => (coordinate: CellCoordinate<T>) => [
+const cellCoordinatesAddNew = <T extends CellType>(coordinates: CellCoordinate<T>[]) => (coordinate: CellCoordinate<T>) => [
     ...coordinates,
     coordinate,
 ]
@@ -66,30 +67,35 @@ const gameStateReducer = (
                 })
             }
 
+            const addCoordinate = putCoordinate({
+                column: action.payload.column,
+                row: action.payload.row,
+            })
+
             switch (cellToAdd.type) {
             case CellsEnum.GAS_GENERATOR:
-                newState.generators = addCoordinate(newState.generators)({
+                newState.generators = cellCoordinatesAddNew(newState.generators)({
                     cell: cellToAdd,
                     column: action.payload.column,
                     row: action.payload.row,
                 })
                 break
             case CellsEnum.BATTERY:
-                newState.batteries = addCoordinate(newState.batteries)({
+                newState.batteries = cellCoordinatesAddNew(newState.batteries)({
                     cell: cellToAdd,
                     column: action.payload.column,
                     row: action.payload.row,
                 })
                 break
             case CellsEnum.CONVEYOR:
-                newState.conveyors = addCoordinate(newState.conveyors)({
+                newState.conveyors = cellCoordinatesAddNew(newState.conveyors)({
                     cell: cellToAdd,
                     column: action.payload.column,
                     row: action.payload.row,
                 })
                 break
             case CellsEnum.DRILL:
-                newState.drills = addCoordinate(newState.drills)({
+                newState.drills = cellCoordinatesAddNew(newState.drills)({
                     cell: cellToAdd,
                     column: action.payload.column,
                     row: action.payload.row,

@@ -4,12 +4,19 @@ import CellsGrid from './components/CellsGrid'
 import CellsRow from './components/CellsRow'
 import CellSwicher from './components/CellSwitcher'
 import ToolsFrame from './components/ToolsFrame'
-import { basicBattery, basicGasGenerator, conveyor } from './shared/cellDeclarations'
+import { basicBattery, basicDrill, basicGasGenerator, conveyor } from './shared/cellDeclarations'
 import { cellClickedActionBuilder, CellClickedPayload, prepareCellToAddActionBuilder } from './shared/gameStateActions'
 import { startTicking } from './shared/gameClock'
 import gameStateReducer from './shared/gameStateReducer'
 import initialState from './shared/initialState'
 import { CellType } from './types/CellTypes'
+
+const availableCells = [
+    basicDrill,
+    conveyor,
+    basicGasGenerator,
+    basicBattery,
+]
 
 const App = () => {
     const [state, dispatch] = useReducer(gameStateReducer, initialState)
@@ -32,18 +39,12 @@ const App = () => {
                 <ToolsFrame>
                     <div>Money: {state.money}</div>
                     <div>
-                        <CellSwicher
-                            cell={conveyor}
-                            onClick={() => prepareCellToAdd(conveyor)}
-                        />
-                        <CellSwicher
-                            cell={basicGasGenerator}
-                            onClick={() => prepareCellToAdd(basicGasGenerator)}
-                        />
-                        <CellSwicher
-                            cell={basicBattery}
-                            onClick={() => prepareCellToAdd(basicBattery)}
-                        />
+                        {availableCells.map((availableCell) => (
+                            <CellSwicher
+                                cell={availableCell}
+                                onClick={() => prepareCellToAdd(availableCell)}
+                            />
+                        ))}
                     </div>
                 </ToolsFrame>
             )}

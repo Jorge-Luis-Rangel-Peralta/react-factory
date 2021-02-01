@@ -1,3 +1,7 @@
+export enum ItemsEnum {
+    CRUDE_OIL_JAR,
+}
+
 export enum CellsEnum {
     EMPTY,
     CONVEYOR,
@@ -34,6 +38,7 @@ export type ConveyorCellType = BaseConsumingCell & {
 export type DrillCellType = BaseConsumingCell & {
     type: CellsEnum.DRILL;
     direction: CellDirections;
+    producingItem?: ItemsEnum;
 }
 
 export type GasGeneratorCellType = BaseCell & {
@@ -54,4 +59,5 @@ export type CellType = EmptyCellType
     | ConveyorCellType
     | BatteryCellType
     | GasGeneratorCellType
+    | DrillCellType
 

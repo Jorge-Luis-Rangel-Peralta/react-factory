@@ -3,8 +3,10 @@ import {
     CellDirections,
     CellsEnum,
     ConveyorCellType,
+    DrillCellType,
     EmptyCellType,
     GasGeneratorCellType,
+    ItemsEnum,
 } from "../types/CellTypes";
 
 export const emptyCell: EmptyCellType = {
@@ -34,4 +36,13 @@ export const basicBattery: BatteryCellType = {
     type: CellsEnum.BATTERY,
     capacity: 20,
     currentEnergy: 0,
+}
+
+export const basicDrill: DrillCellType = {
+    price: 1000,
+    direction: CellDirections.DOWN,
+    energyConsumption: 1,
+    isOn: true,
+    type: CellsEnum.DRILL,
+    producingItem: ItemsEnum.CRUDE_OIL_JAR,
 }

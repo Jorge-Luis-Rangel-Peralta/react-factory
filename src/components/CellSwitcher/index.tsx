@@ -19,13 +19,13 @@ const CellSwicher: React.FC<Props> = ({
     case CellTypes.CONVEYOR:
         return <ConveyorCell cell={cell} onClick={onClick} />
     case CellTypes.EMPTY:
-        return <EmptyCell onClick={onClick} />
+        return <EmptyCell isOn onClick={onClick} />
     case CellTypes.GAS_GENERATOR:
         return <GasGeneratorCell cell={cell} onClick={onClick} />
     case CellTypes.BATTERY:
         return <BatteryCell cell={cell} onClick={onClick} />
     default:
-        return <ErrorCell onClick={onClick} />
+        return <ErrorCell isOn onClick={onClick} />
     }
 }
 

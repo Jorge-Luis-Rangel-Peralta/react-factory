@@ -20,7 +20,14 @@ export const conveyor: ConveyorCellType = {
     direction: CellDirections.DOWN,
     isOn: true,
     energyConsumption: 1,
-    containedItems: [],
+    isContainer: true,
+    containedItems: {
+        bottom: [],
+        center: [],
+        left: [],
+        right: [],
+        top: [],
+    },
 }
 
 export const basicGasGenerator: GasGeneratorCellType = {

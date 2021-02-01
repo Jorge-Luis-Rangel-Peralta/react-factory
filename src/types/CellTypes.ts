@@ -33,7 +33,14 @@ export type DirectedCell = {
 }
 
 export type ContainerCell = {
-    containedItems: ItemsEnum[];
+    isContainer: true;
+    containedItems: {
+        top: ItemsEnum[];
+        bottom: ItemsEnum[];
+        left: ItemsEnum[];
+        right: ItemsEnum[];
+        center: ItemsEnum[];
+    };
 }
 
 export type EmptyCellType = BaseCell & {

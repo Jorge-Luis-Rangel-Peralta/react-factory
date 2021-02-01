@@ -8,9 +8,9 @@ const cellIsContainerCell = (cell: unknown): cell is ContainerCell => {
         return false
     }
 
-    const containedItems = (cell as Record<string, unknown>).containedItems
+    const isContainer = (cell as Record<string, unknown>).isContainer
 
-    if (Array.isArray(containedItems)) {
+    if (isContainer === true) {
         return true
     }
 

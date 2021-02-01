@@ -289,15 +289,31 @@ const gameStateReducer = (
                     const neighbor = getNeighbor(coordinate, drill.direction)
 
                     if (neighbor) {
-                        if (cellIsContainerCell(neighbor.cell)) {
+                        const targetPosition = drill.direction === CellDirections.DOWN
+                            ? 'top'
+                            : drill.direction === CellDirections.UP
+                            ? 'bottom'
+                            : drill.direction === CellDirections.LEFT
+                            ? 'right'
+                            : drill.direction === CellDirections.RIGHT
+                            ? 'left'
+                            : undefined
+
+                        if (cellIsContainerCell(neighbor.cell) && targetPosition) {
                             applyCellChange(neighbor, {
                                 ...neighbor.cell,
-                                containedItems: [
+                                containedItems: {
                                     ...neighbor.cell.containedItems,
-                                    drill.producingItem,
-                                ],
+                                    [targetPosition]: [
+                                        ...neighbor.cell.containedItems[targetPosition],
+                                        drill.producingItem,
+                                    ],
+                                },
                             })
-                            console.log('neighbor', neighbor)
+                            console.log([
+                                ...neighbor.cell.containedItems[targetPosition],
+                                drill.producingItem,
+                            ])
                         }
                     }
                 } else {

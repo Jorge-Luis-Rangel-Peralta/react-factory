@@ -3,6 +3,7 @@ import styled from 'styled-components'
 const CellBase = styled.div<{
     isOn: boolean;
 }>`
+    position: relative;
     width: 60px;
     height: 60px;
     max-width: 60px;

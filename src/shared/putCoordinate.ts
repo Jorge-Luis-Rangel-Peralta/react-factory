@@ -12,18 +12,28 @@ const putCoordinate = (
 ) => <T extends CellType>(
     coordinates: CellCoordinate<T>[],
 ) => (cell: T) => {
+    const newCoordinate = {
+        column: args.column,
+        row: args.row,
+        cell,
+    }
+
     if (valueIsUndefined(args.index)) {
         return [
             ...coordinates,
-            {
-                column: args.column,
-                row: args.row,
-                cell,
-            },
+            newCoordinate,
         ]
     }
 
-    return coordinates
+    if (args.index >= coordinates.length) {
+        throw new Error(`putCoordinate should have an index already in the array, to add element use index: undefined instead`)
+    }
+
+    return [
+        ...coordinates.slice(0, args.index),
+        newCoordinate,
+        ...coordinates.slice(args.index + 1),
+    ]
 }
 
 export default putCoordinate

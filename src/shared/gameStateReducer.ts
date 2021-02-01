@@ -1,8 +1,7 @@
 import { CellCoordinate, BaseConsumingCell, BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType, DrillCellType, CellDirections } from "../types/CellTypes"
 import cellIsContainerCell from "./cellIsContainerCell"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
-import putCellOnGrid from "./putCellOnGrid"
-import replaceGridCell from "./replaceGridCell"
+import updateGridsCell from "./updateGridsCell"
 
 export enum UiStatesEnum {
     IDLE,
@@ -55,24 +54,40 @@ const gameStateReducer = (
         ) {
             return {
                 ...state,
-                uiState: UiStatesEnum.IDLE,
-                money: state.money - cellToAdd.price,
-                ...putCellOnGrid(state)({
+                ...updateGridsCell(state)({
                     column: action.payload.column,
                     row: action.payload.row,
                 })(cellToAdd),
+                uiState: UiStatesEnum.IDLE,
+                money: state.money - cellToAdd.price,
             }
         }
         return state
     case ActionTypeEnum.CLOCK_TICK:
         let energyGenerated = 0
 
-        let grid = state.grid
+        let newState = state
 
-        const generators = state.generators.map((coordinate) => {
+        type UpdateArgs = {
+            coordinate: CellCoordinate<CellType>;
+            cell: CellType;
+        }
+
+        const updateStateCell = (args: UpdateArgs) => {
+            newState = {
+                ...newState,
+                ...updateGridsCell(newState)({
+                    column: args.coordinate.column,
+                    row: args.coordinate.row,
+                    index: args.coordinate.index,
+                })(args.cell),
+            }
+        }
+
+        newState.generators.forEach((coordinate) => {
             const generator = coordinate.cell
-            if (generator.gas < 0) {
-                return coordinate
+            if (generator.gas <= 0) {
+                return
             }
 
             const energyGeneratedByThis = generator.energyGeneratedPerGasUnit
@@ -84,24 +99,17 @@ const gameStateReducer = (
                 gas: generator.gas - generator.gasBurnedPerTick
             }
 
-            grid = replaceGridCell({
-                column: coordinate.column,
-                row: coordinate.row,
-                newCell: newGenerator,
-                grid,
-            })
-
-            return {
-                ...coordinate,
+            updateStateCell({
+                coordinate,
                 cell: newGenerator,
-            }
+            })
         })
 
-        let batteries = state.batteries.map((coordinate) => {
+        newState.batteries.forEach((coordinate) => {
             const battery = coordinate.cell
 
             if (energyGenerated === 0 || battery.currentEnergy === battery.capacity) {
-                return coordinate
+                return
             }
 
             const energyNeeddedToFill = battery.capacity - battery.currentEnergy
@@ -122,27 +130,20 @@ const gameStateReducer = (
                 energyGenerated -= energyNeeddedToFill
             }
 
-            grid = replaceGridCell({
-                column: coordinate.column,
-                row: coordinate.row,
-                grid,
-                newCell: chargedBattery,
-            })
-
-            return {
-                ...coordinate,
+            updateStateCell({
+                coordinate,
                 cell: chargedBattery,
-            }
+            })
         })
 
-        const getBatteryEnergy = () => batteries
+        const getBatteryEnergy = () => newState.batteries
             .reduce((total, battery) => battery.cell.currentEnergy + total, 0)
 
         const getEnergyFromBatteries = (energy: number) => {
             let energyLeftToRemove = energy
-            batteries = batteries.map((coordinate) => {
+            newState.batteries.forEach((coordinate) => {
                 if (energyLeftToRemove === 0) {
-                    return coordinate
+                    return
                 }
 
                 let battery = coordinate.cell
@@ -161,17 +162,10 @@ const gameStateReducer = (
                     energyLeftToRemove = 0
                 }
 
-                grid = replaceGridCell({
-                    column: coordinate.column,
-                    row: coordinate.row,
-                    grid,
-                    newCell: battery,
-                })
-
-                return {
-                    ...coordinate,
+                updateStateCell({
+                    coordinate,
                     cell: battery,
-                }
+                })
             })
         }
 
@@ -193,24 +187,6 @@ const gameStateReducer = (
             return newConsumer
         }
 
-        const applyCellChange = <T extends CellType>(coordinate: CellCoordinate<T>, newCell: T) => {
-            if (coordinate.cell !== newCell) {
-                grid = replaceGridCell({
-                    column: coordinate.column,
-                    row: coordinate.row,
-                    grid,
-                    newCell: newCell,
-                })
-
-                return {
-                    ...coordinate,
-                    cell: newCell,
-                }
-            } else {
-                return coordinate
-            }
-        }
-
         const getNeighbor = <T extends CellType>(
             coordinate: CellCoordinate<T>,
             direction: CellDirections,
@@ -219,11 +195,11 @@ const gameStateReducer = (
             case CellDirections.DOWN:
                 const neighborRow = coordinate.row + 1
 
-                if (neighborRow > grid.length) {
+                if (neighborRow > newState.grid.length) {
                     return undefined
                 }
 
-                const cell = grid[neighborRow][coordinate.column]
+                const cell = newState.grid[neighborRow][coordinate.column]
 
                 if (!cell) {
                     return undefined
@@ -235,7 +211,7 @@ const gameStateReducer = (
             }
         }
 
-        const conveyors = state.conveyors.map((coordinate) => {
+        newState.conveyors.forEach((coordinate, coordinateIndex) => {
             let conveyor = consumeEnergy(coordinate.cell)
 
             if (conveyor.ticksCount >= conveyor.ticksToMove) {
@@ -252,7 +228,7 @@ const gameStateReducer = (
                             left: [],
                             right: [],
                             center: conveyor.containedItems.top,
-                            top: conveyor.containedItems.top,
+                            top: [],
                         },
                     }
                     break
@@ -262,19 +238,22 @@ const gameStateReducer = (
                 conveyor = { ...conveyor, ticksCount: conveyor.ticksCount + 1 }
             }
 
-            return applyCellChange(coordinate, conveyor)
+            updateStateCell({
+                coordinate,
+                cell: conveyor,
+            })
         })
 
-        const drills = state.drills.map((coordinate) => {
+        newState.drills.forEach((coordinate) => {
             let drill = consumeEnergy(coordinate.cell)
 
             if (drill.isOn) {
                 const currentCount = drill.ticksCount
                 if (currentCount >= drill.ticksToProduce) {
                     drill = { ...drill, ticksCount: 0 }
-                    const neighbor = getNeighbor(coordinate, drill.direction)
+                    const neighborCoordinate = getNeighbor(coordinate, drill.direction)
 
-                    if (neighbor) {
+                    if (neighborCoordinate) {
                         const targetPosition = drill.direction === CellDirections.DOWN
                             ? 'top'
                             : drill.direction === CellDirections.UP
@@ -285,15 +264,18 @@ const gameStateReducer = (
                             ? 'left'
                             : undefined
 
-                        if (cellIsContainerCell(neighbor.cell) && targetPosition) {
-                            applyCellChange(neighbor, {
-                                ...neighbor.cell,
-                                containedItems: {
-                                    ...neighbor.cell.containedItems,
-                                    [targetPosition]: [
-                                        ...neighbor.cell.containedItems[targetPosition],
-                                        drill.producingItem,
-                                    ],
+                        if (cellIsContainerCell(neighborCoordinate.cell) && targetPosition) {
+                            updateStateCell({
+                                coordinate: neighborCoordinate,
+                                cell: {
+                                    ...neighborCoordinate.cell,
+                                    containedItems: {
+                                        ...neighborCoordinate.cell.containedItems,
+                                        [targetPosition]: [
+                                            ...neighborCoordinate.cell.containedItems[targetPosition],
+                                            drill.producingItem,
+                                        ],
+                                    },
                                 },
                             })
                         }
@@ -303,17 +285,13 @@ const gameStateReducer = (
                 }
             }
 
-            return applyCellChange(coordinate, drill)
+            updateStateCell({
+                coordinate,
+                cell: drill,
+            })
         })
 
-        return {
-            ...state,
-            grid,
-            generators,
-            batteries,
-            conveyors,
-            drills,
-        }
+        return newState
     default:
         throw new Error(`Invalid action type`)
     }

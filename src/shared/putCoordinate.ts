@@ -15,24 +15,26 @@ const putCoordinate = (
     const newCoordinate = {
         column: args.column,
         row: args.row,
+        index: args.index,
         cell,
     }
 
-    if (valueIsUndefined(args.index)) {
+    if (valueIsUndefined(newCoordinate.index)) {
+        newCoordinate.index = coordinates.length
         return [
             ...coordinates,
             newCoordinate,
         ]
     }
 
-    if (args.index >= coordinates.length) {
+    if (newCoordinate.index >= coordinates.length) {
         throw new Error(`putCoordinate should have an index already in the array, to add element use index: undefined instead`)
     }
 
     return [
         ...coordinates.slice(0, args.index),
         newCoordinate,
-        ...coordinates.slice(args.index + 1),
+        ...coordinates.slice(newCoordinate.index + 1),
     ]
 }
 

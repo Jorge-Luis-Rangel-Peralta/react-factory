@@ -17,7 +17,12 @@ export enum CellDirections {
     RIGHT,
 }
 
-export type CellCoordinate<T extends CellType> = { row: number; column: number; cell: T }
+export type CellCoordinate<T extends CellType> = {
+    row: number;
+    column: number;
+    index?: number;
+    cell: T,
+}
 
 type BaseCell = {
     price: number;

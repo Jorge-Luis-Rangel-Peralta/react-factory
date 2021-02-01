@@ -16,6 +16,7 @@ it('Should add to the end when no index is added to args', () => {
     expect(newCoordinates[1]).toStrictEqual({
         column: 10,
         row: 10,
+        index: 1,
         cell: emptyCell,
     })
 })
@@ -39,6 +40,7 @@ it('Should replace without mutation from array when index is added', () => {
     expect(newCoordinates[2]).toStrictEqual({
         column: 10,
         row: 10,
+        index: 2,
         cell: emptyCell,
     })
 })

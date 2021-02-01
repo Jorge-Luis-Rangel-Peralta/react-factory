@@ -6,9 +6,10 @@ import replaceGridCell from './replaceGridCell'
 type Args = {
     column: number;
     row: number;
+    index?: number;
 }
 
-const putCellOnGrid = (
+const updateGridsCell = (
     state: CellsState,
 ) => (
     args: Args,
@@ -47,4 +48,4 @@ const putCellOnGrid = (
     return newState
 }
 
-export default putCellOnGrid
+export default updateGridsCell

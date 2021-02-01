@@ -29,7 +29,7 @@ export const conveyor: ConveyorCellType = {
         top: [],
     },
     ticksCount: 0,
-    ticksToMove: 100,
+    ticksToMove: 10,
 }
 
 export const basicGasGenerator: GasGeneratorCellType = {
@@ -55,6 +55,6 @@ export const basicDrill: DrillCellType = {
     isOn: true,
     type: CellsEnum.DRILL,
     producingItem: ItemsEnum.CRUDE_OIL_JAR,
-    ticksToProduce: 10,
+    ticksToProduce: 30,
     ticksCount: 0,
 }

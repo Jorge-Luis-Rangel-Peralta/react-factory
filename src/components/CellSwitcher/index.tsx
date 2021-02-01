@@ -5,6 +5,7 @@ import ConveyorCell from '../ConveyorCell'
 import { ErrorCell } from './style'
 import GasGeneratorCell from '../GasGeneratorCell'
 import BatteryCell from '../BatteryCell'
+import DrillCell from '../DrillCell'
 
 type Props = {
     cell: CellType;
@@ -24,6 +25,8 @@ const CellSwicher: React.FC<Props> = ({
         return <GasGeneratorCell cell={cell} onClick={onClick} />
     case CellsEnum.BATTERY:
         return <BatteryCell cell={cell} onClick={onClick} />
+    case CellsEnum.DRILL:
+        return <DrillCell cell={cell} onClick={onClick} />
     default:
         return <ErrorCell isOn onClick={onClick} />
     }

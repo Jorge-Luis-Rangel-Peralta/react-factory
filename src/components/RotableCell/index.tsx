@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { CellDirections } from '../../types/CellTypes'
 import CellBaseWithImage from '../CellBaseWithImage'
 
-export const Frame = styled(CellBaseWithImage)<{
+const RotableCell = styled(CellBaseWithImage)<{
     direction: CellDirections;
 }>`
     transform: rotate(${({ direction }) => {
@@ -18,3 +18,5 @@ export const Frame = styled(CellBaseWithImage)<{
         }
     }}deg);
 `
+
+export default RotableCell

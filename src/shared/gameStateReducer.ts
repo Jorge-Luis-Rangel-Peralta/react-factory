@@ -1,4 +1,5 @@
-import { BaseConsumingCell, BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType, DrillCellType, ItemsEnum } from "../types/CellTypes"
+import { CellCoordinate, BaseConsumingCell, BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType, DrillCellType, CellDirections } from "../types/CellTypes"
+import cellIsContainerCell from "./cellIsContainerCell"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
 import replaceGridCell from "./replaceGridCell"
 
@@ -6,8 +7,6 @@ export enum UiStatesEnum {
     IDLE,
     ADD_CELL,
 }
-
-type CellCoordinate<T extends CellType> = { row: number; column: number; cell: T }
 
 const addCoordinate = <T extends CellType>(coordinates: CellCoordinate<T>[]) => (coordinate: CellCoordinate<T>) => [
     ...coordinates,
@@ -250,6 +249,30 @@ const gameStateReducer = (
             }
         }
 
+        const getNeighbor = <T extends CellType>(
+            coordinate: CellCoordinate<T>,
+            direction: CellDirections,
+        ): CellCoordinate<CellType> | undefined => {
+            switch(direction) {
+            case CellDirections.DOWN:
+                const neighborRow = coordinate.row + 1
+
+                if (neighborRow > grid.length) {
+                    return undefined
+                }
+
+                const cell = grid[neighborRow][coordinate.column]
+
+                if (!cell) {
+                    return undefined
+                }
+
+                return { cell, column: coordinate.column, row: neighborRow }
+            default:
+                return undefined
+            }
+        }
+
         const conveyors = state.conveyors.map((coordinate) => {
             const conveyor = consumeEnergy(coordinate.cell)
 
@@ -263,7 +286,20 @@ const gameStateReducer = (
                 const currentCount = drill.ticksCount
                 if (currentCount >= drill.ticksToProduce) {
                     drill = { ...drill, ticksCount: 0 }
-                    console.log('Makes extraction', drill.producingItem)
+                    const neighbor = getNeighbor(coordinate, drill.direction)
+
+                    if (neighbor) {
+                        if (cellIsContainerCell(neighbor.cell)) {
+                            applyCellChange(neighbor, {
+                                ...neighbor.cell,
+                                containedItems: [
+                                    ...neighbor.cell.containedItems,
+                                    drill.producingItem,
+                                ],
+                            })
+                            console.log('neighbor', neighbor)
+                        }
+                    }
                 } else {
                     drill = { ...drill, ticksCount: drill.ticksCount + 1 }
                 }

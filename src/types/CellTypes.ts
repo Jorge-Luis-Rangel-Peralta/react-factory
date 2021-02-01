@@ -17,6 +17,8 @@ export enum CellDirections {
     RIGHT,
 }
 
+export type CellCoordinate<T extends CellType> = { row: number; column: number; cell: T }
+
 type BaseCell = {
     price: number;
 }
@@ -26,19 +28,25 @@ export type BaseConsumingCell = BaseCell & {
     energyConsumption: number;
 }
 
+export type DirectedCell = {
+    direction: CellDirections;
+}
+
+export type ContainerCell = {
+    containedItems: ItemsEnum[];
+}
+
 export type EmptyCellType = BaseCell & {
     type: CellsEnum.EMPTY;
 }
 
-export type ConveyorCellType = BaseConsumingCell & {
+export type ConveyorCellType = BaseConsumingCell & DirectedCell & ContainerCell & {
     type: CellsEnum.CONVEYOR;
-    direction: CellDirections;
 }
 
-export type DrillCellType = BaseConsumingCell & {
+export type DrillCellType = BaseConsumingCell & DirectedCell & {
     type: CellsEnum.DRILL;
-    direction: CellDirections;
-    producingItem?: ItemsEnum;
+    producingItem: ItemsEnum;
     ticksToProduce: number;
     ticksCount: number;
 }

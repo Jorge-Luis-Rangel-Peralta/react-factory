@@ -11,6 +11,7 @@ const initialState: GameStateType = {
     generators: [],
     batteries: [],
     conveyors: [],
+    drills: [],
 }
 
 export default initialState

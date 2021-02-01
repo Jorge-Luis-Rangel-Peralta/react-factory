@@ -21,7 +21,7 @@ type BaseCell = {
     price: number;
 }
 
-type BaseConsumingCell = BaseCell & {
+export type BaseConsumingCell = BaseCell & {
     isOn: boolean;
     energyConsumption: number;
 }

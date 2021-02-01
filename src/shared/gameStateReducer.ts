@@ -1,4 +1,4 @@
-import { BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType } from "../types/CellTypes"
+import { BaseConsumingCell, BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType, DrillCellType } from "../types/CellTypes"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
 import replaceGridCell from "./replaceGridCell"
 
@@ -22,6 +22,7 @@ export type GameStateType = {
     generators: CellCoordinate<GasGeneratorCellType>[];
     batteries: CellCoordinate<BatteryCellType>[];
     conveyors: CellCoordinate<ConveyorCellType>[];
+    drills: CellCoordinate<DrillCellType>[];
 }
 
 const gameStateReducer = (
@@ -75,6 +76,13 @@ const gameStateReducer = (
                 break
             case CellsEnum.CONVEYOR:
                 newState.conveyors = addCoordinate(newState.conveyors)({
+                    cell: cellToAdd,
+                    column: action.payload.column,
+                    row: action.payload.row,
+                })
+                break
+            case CellsEnum.DRILL:
+                newState.drills = addCoordinate(newState.drills)({
                     cell: cellToAdd,
                     column: action.payload.column,
                     row: action.payload.row,
@@ -198,24 +206,26 @@ const gameStateReducer = (
             })
         }
 
-        console.log('energyGenerated', energyGenerated)
-        console.log('energyOnBatteries', getBatteryEnergy())
+        const consumeEnergy = <T extends BaseConsumingCell>(consumer: T) => {
+            let newConsumer = consumer
+            if (energyGenerated >= newConsumer.energyConsumption) {
+                energyGenerated -= newConsumer.energyConsumption
+                if (!newConsumer.isOn) {
+                    newConsumer = { ...newConsumer, isOn: true }
+                }
+            } else if (getBatteryEnergy() >= newConsumer.energyConsumption) {
+                getEnergyFromBatteries(newConsumer.energyConsumption)
+                if (!newConsumer.isOn) {
+                    newConsumer = { ...newConsumer, isOn: true }
+                }
+            } else if (newConsumer.isOn) {
+                newConsumer = { ...newConsumer, isOn: false }
+            }
+            return newConsumer
+        }
 
         const conveyors = state.conveyors.map((coordinate) => {
-            let conveyor = coordinate.cell
-            if (energyGenerated >= conveyor.energyConsumption) {
-                energyGenerated -= conveyor.energyConsumption
-                if (!conveyor.isOn) {
-                    conveyor = { ...conveyor, isOn: true }
-                }
-            } else if (getBatteryEnergy() >= conveyor.energyConsumption) {
-                getEnergyFromBatteries(conveyor.energyConsumption)
-                if (!conveyor.isOn) {
-                    conveyor = { ...conveyor, isOn: true }
-                }
-            } else if (conveyor.isOn) {
-                conveyor = { ...conveyor, isOn: false }
-            }
+            const conveyor = consumeEnergy(coordinate.cell)
 
             if (coordinate.cell !== conveyor) {
                 grid = replaceGridCell({

@@ -41,6 +41,14 @@ const gameStateReducer = (
         }
     case ActionTypeEnum.CELL_CLICKED:
         const { cellToAdd } = state
+
+        if (!cellToAdd || state.money < cellToAdd.price) {
+            return {
+                ...state,
+                uiState: UiStatesEnum.IDLE,
+            }
+        }
+
         if (
             state.uiState === UiStatesEnum.ADD_CELL
             && cellToAdd
@@ -89,7 +97,7 @@ const gameStateReducer = (
                 })
                 break
             default:
-                return state
+                return { ...state, uiState: UiStatesEnum.IDLE }
             }
 
             return newState
@@ -250,6 +258,11 @@ const gameStateReducer = (
 
         const drills = state.drills.map((coordinate) => {
             const drill = consumeEnergy(coordinate.cell)
+
+            if (drill.isOn) {
+                console.log('Makes extraction')
+            }
+
             return applyCellChange(coordinate, drill)
         })
 

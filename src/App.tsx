@@ -4,7 +4,7 @@ import CellsGrid from './components/CellsGrid'
 import CellsRow from './components/CellsRow'
 import CellSwicher from './components/CellSwitcher'
 import ToolsFrame from './components/ToolsFrame'
-import { basicBattery, basicGasGenerator, conveyorRigth } from './shared/cellDeclarations'
+import { basicBattery, basicGasGenerator, conveyor } from './shared/cellDeclarations'
 import { cellClickedActionBuilder, CellClickedPayload, prepareCellToAddActionBuilder } from './shared/gameStateActions'
 import { startTicking } from './shared/gameClock'
 import gameStateReducer from './shared/gameStateReducer'
@@ -33,8 +33,8 @@ const App = () => {
                     <div>Money: {state.money}</div>
                     <div>
                         <CellSwicher
-                            cell={conveyorRigth}
-                            onClick={() => prepareCellToAdd(conveyorRigth)}
+                            cell={conveyor}
+                            onClick={() => prepareCellToAdd(conveyor)}
                         />
                         <CellSwicher
                             cell={basicGasGenerator}

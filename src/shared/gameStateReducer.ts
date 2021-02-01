@@ -1,4 +1,4 @@
-import { BatteryCellType, CellType, CellTypes, ConveyorCellType, GasGeneratorCellType } from "../types/CellTypes"
+import { BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType } from "../types/CellTypes"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
 import replaceGridCell from "./replaceGridCell"
 
@@ -43,7 +43,7 @@ const gameStateReducer = (
         if (
             state.uiState === UiStatesEnum.ADD_CELL
             && cellToAdd
-            && action.payload.cell.type === CellTypes.EMPTY
+            && action.payload.cell.type === CellsEnum.EMPTY
             && state.money >= cellToAdd.price
         ) {
             const newState = {
@@ -59,21 +59,21 @@ const gameStateReducer = (
             }
 
             switch (cellToAdd.type) {
-            case CellTypes.GAS_GENERATOR:
+            case CellsEnum.GAS_GENERATOR:
                 newState.generators = addCoordinate(newState.generators)({
                     cell: cellToAdd,
                     column: action.payload.column,
                     row: action.payload.row,
                 })
                 break
-            case CellTypes.BATTERY:
+            case CellsEnum.BATTERY:
                 newState.batteries = addCoordinate(newState.batteries)({
                     cell: cellToAdd,
                     column: action.payload.column,
                     row: action.payload.row,
                 })
                 break
-            case CellTypes.CONVEYOR:
+            case CellsEnum.CONVEYOR:
                 newState.conveyors = addCoordinate(newState.conveyors)({
                     cell: cellToAdd,
                     column: action.payload.column,

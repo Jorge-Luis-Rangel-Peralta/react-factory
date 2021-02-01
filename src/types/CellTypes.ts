@@ -1,8 +1,9 @@
-export enum CellTypes {
+export enum CellsEnum {
     EMPTY,
     CONVEYOR,
     BATTERY,
     GAS_GENERATOR,
+    DRILL,
 }
 
 export enum CellDirections {
@@ -22,16 +23,21 @@ type BaseConsumingCell = BaseCell & {
 }
 
 export type EmptyCellType = BaseCell & {
-    type: CellTypes.EMPTY;
+    type: CellsEnum.EMPTY;
 }
 
 export type ConveyorCellType = BaseConsumingCell & {
-    type: CellTypes.CONVEYOR;
+    type: CellsEnum.CONVEYOR;
+    direction: CellDirections;
+}
+
+export type DrillCellType = BaseConsumingCell & {
+    type: CellsEnum.DRILL;
     direction: CellDirections;
 }
 
 export type GasGeneratorCellType = BaseCell & {
-    type: CellTypes.GAS_GENERATOR,
+    type: CellsEnum.GAS_GENERATOR,
     gas: number;
     gasCapacity: number;
     gasBurnedPerTick: number;
@@ -39,7 +45,7 @@ export type GasGeneratorCellType = BaseCell & {
 }
 
 export type BatteryCellType = BaseCell & {
-    type: CellTypes.BATTERY;
+    type: CellsEnum.BATTERY;
     capacity: number;
     currentEnergy: number;
 }

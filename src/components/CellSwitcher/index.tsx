@@ -1,5 +1,5 @@
 import React from 'react'
-import { CellType, CellTypes } from '../../types/CellTypes'
+import { CellType, CellsEnum } from '../../types/CellTypes'
 import EmptyCell from '../EmptyCell'
 import ConveyorCell from '../ConveyorCell'
 import { ErrorCell } from './style'
@@ -16,13 +16,13 @@ const CellSwicher: React.FC<Props> = ({
     onClick,
 }) => {
     switch (cell.type) {
-    case CellTypes.CONVEYOR:
+    case CellsEnum.CONVEYOR:
         return <ConveyorCell cell={cell} onClick={onClick} />
-    case CellTypes.EMPTY:
+    case CellsEnum.EMPTY:
         return <EmptyCell isOn onClick={onClick} />
-    case CellTypes.GAS_GENERATOR:
+    case CellsEnum.GAS_GENERATOR:
         return <GasGeneratorCell cell={cell} onClick={onClick} />
-    case CellTypes.BATTERY:
+    case CellsEnum.BATTERY:
         return <BatteryCell cell={cell} onClick={onClick} />
     default:
         return <ErrorCell isOn onClick={onClick} />

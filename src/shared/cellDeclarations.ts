@@ -45,4 +45,6 @@ export const basicDrill: DrillCellType = {
     isOn: true,
     type: CellsEnum.DRILL,
     producingItem: ItemsEnum.CRUDE_OIL_JAR,
+    ticksToProduce: 10,
+    ticksCount: 0,
 }

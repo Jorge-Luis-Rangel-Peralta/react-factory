@@ -39,6 +39,8 @@ export type DrillCellType = BaseConsumingCell & {
     type: CellsEnum.DRILL;
     direction: CellDirections;
     producingItem?: ItemsEnum;
+    ticksToProduce: number;
+    ticksCount: number;
 }
 
 export type GasGeneratorCellType = BaseCell & {

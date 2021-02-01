@@ -1,4 +1,4 @@
-import { BaseConsumingCell, BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType, DrillCellType } from "../types/CellTypes"
+import { BaseConsumingCell, BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType, DrillCellType, ItemsEnum } from "../types/CellTypes"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
 import replaceGridCell from "./replaceGridCell"
 
@@ -257,10 +257,16 @@ const gameStateReducer = (
         })
 
         const drills = state.drills.map((coordinate) => {
-            const drill = consumeEnergy(coordinate.cell)
+            let drill = consumeEnergy(coordinate.cell)
 
             if (drill.isOn) {
-                console.log('Makes extraction')
+                const currentCount = drill.ticksCount
+                if (currentCount >= drill.ticksToProduce) {
+                    drill = { ...drill, ticksCount: 0 }
+                    console.log('Makes extraction', drill.producingItem)
+                } else {
+                    drill = { ...drill, ticksCount: drill.ticksCount + 1 }
+                }
             }
 
             return applyCellChange(coordinate, drill)

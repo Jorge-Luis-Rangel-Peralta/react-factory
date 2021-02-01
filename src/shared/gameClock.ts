@@ -5,7 +5,7 @@ const makeATick = (dispatch: React.Dispatch<GameStateAction>) => {
         dispatch(clockTickAction)
         setTimeout(() => {
             makeATick(dispatch)
-        }, 1000)
+        }, 300)
     })
 }
 

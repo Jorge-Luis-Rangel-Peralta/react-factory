@@ -224,24 +224,33 @@ const gameStateReducer = (
             return newConsumer
         }
 
-        const conveyors = state.conveyors.map((coordinate) => {
-            const conveyor = consumeEnergy(coordinate.cell)
-
-            if (coordinate.cell !== conveyor) {
+        const applyCellChange = <T extends CellType>(coordinate: CellCoordinate<T>, newCell: T) => {
+            if (coordinate.cell !== newCell) {
                 grid = replaceGridCell({
                     column: coordinate.column,
                     row: coordinate.row,
                     grid,
-                    newCell: conveyor,
+                    newCell: newCell,
                 })
 
                 return {
                     ...coordinate,
-                    cell: conveyor,
+                    cell: newCell,
                 }
             } else {
                 return coordinate
             }
+        }
+
+        const conveyors = state.conveyors.map((coordinate) => {
+            const conveyor = consumeEnergy(coordinate.cell)
+
+            return applyCellChange(coordinate, conveyor)
+        })
+
+        const drills = state.drills.map((coordinate) => {
+            const drill = consumeEnergy(coordinate.cell)
+            return applyCellChange(coordinate, drill)
         })
 
         return {
@@ -250,6 +259,7 @@ const gameStateReducer = (
             generators,
             batteries,
             conveyors,
+            drills,
         }
     default:
         throw new Error(`Invalid action type`)

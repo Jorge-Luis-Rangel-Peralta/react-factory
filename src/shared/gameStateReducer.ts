@@ -1,7 +1,7 @@
 import { CellCoordinate, BaseConsumingCell, BatteryCellType, CellType, CellsEnum, ConveyorCellType, GasGeneratorCellType, DrillCellType, CellDirections } from "../types/CellTypes"
 import cellIsContainerCell from "./cellIsContainerCell"
 import { ActionTypeEnum, GameStateAction } from "./gameStateActions"
-import putCoordinate from "./putCoordinate"
+import putCellOnGrid from "./putCellOnGrid"
 import replaceGridCell from "./replaceGridCell"
 
 export enum UiStatesEnum {
@@ -9,20 +9,18 @@ export enum UiStatesEnum {
     ADD_CELL,
 }
 
-const cellCoordinatesAddNew = <T extends CellType>(coordinates: CellCoordinate<T>[]) => (coordinate: CellCoordinate<T>) => [
-    ...coordinates,
-    coordinate,
-]
-
-export type GameStateType = {
-    money: number;
-    uiState: UiStatesEnum;
-    cellToAdd?: CellType;
+export type CellsState = {
     grid: CellType[][];
     generators: CellCoordinate<GasGeneratorCellType>[];
     batteries: CellCoordinate<BatteryCellType>[];
     conveyors: CellCoordinate<ConveyorCellType>[];
     drills: CellCoordinate<DrillCellType>[];
+}
+
+export type GameStateType = CellsState & {
+    money: number;
+    uiState: UiStatesEnum;
+    cellToAdd?: CellType;
 }
 
 const gameStateReducer = (
@@ -55,57 +53,15 @@ const gameStateReducer = (
             && action.payload.cell.type === CellsEnum.EMPTY
             && state.money >= cellToAdd.price
         ) {
-            const newState = {
+            return {
                 ...state,
                 uiState: UiStatesEnum.IDLE,
                 money: state.money - cellToAdd.price,
-                grid: replaceGridCell({
+                ...putCellOnGrid(state)({
                     column: action.payload.column,
                     row: action.payload.row,
-                    grid: state.grid,
-                    newCell: cellToAdd,
-                })
+                })(cellToAdd),
             }
-
-            const addCoordinate = putCoordinate({
-                column: action.payload.column,
-                row: action.payload.row,
-            })
-
-            switch (cellToAdd.type) {
-            case CellsEnum.GAS_GENERATOR:
-                newState.generators = cellCoordinatesAddNew(newState.generators)({
-                    cell: cellToAdd,
-                    column: action.payload.column,
-                    row: action.payload.row,
-                })
-                break
-            case CellsEnum.BATTERY:
-                newState.batteries = cellCoordinatesAddNew(newState.batteries)({
-                    cell: cellToAdd,
-                    column: action.payload.column,
-                    row: action.payload.row,
-                })
-                break
-            case CellsEnum.CONVEYOR:
-                newState.conveyors = cellCoordinatesAddNew(newState.conveyors)({
-                    cell: cellToAdd,
-                    column: action.payload.column,
-                    row: action.payload.row,
-                })
-                break
-            case CellsEnum.DRILL:
-                newState.drills = cellCoordinatesAddNew(newState.drills)({
-                    cell: cellToAdd,
-                    column: action.payload.column,
-                    row: action.payload.row,
-                })
-                break
-            default:
-                return { ...state, uiState: UiStatesEnum.IDLE }
-            }
-
-            return newState
         }
         return state
     case ActionTypeEnum.CLOCK_TICK:

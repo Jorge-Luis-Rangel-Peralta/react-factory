@@ -49,6 +49,8 @@ export type EmptyCellType = BaseCell & {
 
 export type ConveyorCellType = BaseConsumingCell & DirectedCell & ContainerCell & {
     type: CellsEnum.CONVEYOR;
+    ticksToMove: number;
+    ticksCount: number;
 }
 
 export type DrillCellType = BaseConsumingCell & DirectedCell & {

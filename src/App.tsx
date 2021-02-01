@@ -39,8 +39,9 @@ const App = () => {
                 <ToolsFrame>
                     <div>Money: {state.money}</div>
                     <div>
-                        {availableCells.map((availableCell) => (
+                        {availableCells.map((availableCell, index) => (
                             <CellSwicher
+                                key={index}
                                 cell={availableCell}
                                 onClick={() => prepareCellToAdd(availableCell)}
                             />

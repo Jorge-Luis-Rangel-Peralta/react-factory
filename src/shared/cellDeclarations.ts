@@ -28,6 +28,8 @@ export const conveyor: ConveyorCellType = {
         right: [],
         top: [],
     },
+    ticksCount: 0,
+    ticksToMove: 100,
 }
 
 export const basicGasGenerator: GasGeneratorCellType = {

@@ -274,7 +274,31 @@ const gameStateReducer = (
         }
 
         const conveyors = state.conveyors.map((coordinate) => {
-            const conveyor = consumeEnergy(coordinate.cell)
+            let conveyor = consumeEnergy(coordinate.cell)
+
+            if (conveyor.ticksCount >= conveyor.ticksToMove) {
+                switch (conveyor.direction) {
+                case CellDirections.DOWN:
+                    conveyor = {
+                        ...conveyor,
+                        containedItems: {
+                            bottom: [
+                                ...conveyor.containedItems.left,
+                                ...conveyor.containedItems.right,
+                                ...conveyor.containedItems.center,
+                            ],
+                            left: [],
+                            right: [],
+                            center: conveyor.containedItems.top,
+                            top: conveyor.containedItems.top,
+                        },
+                    }
+                    break
+                }
+                conveyor = { ...conveyor, ticksCount: 0 }
+            } else {
+                conveyor = { ...conveyor, ticksCount: conveyor.ticksCount + 1 }
+            }
 
             return applyCellChange(coordinate, conveyor)
         })
@@ -310,10 +334,6 @@ const gameStateReducer = (
                                     ],
                                 },
                             })
-                            console.log([
-                                ...neighbor.cell.containedItems[targetPosition],
-                                drill.producingItem,
-                            ])
                         }
                     }
                 } else {

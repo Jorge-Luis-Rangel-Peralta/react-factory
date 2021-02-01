@@ -18,8 +18,14 @@ const ConveyorCell: React.FC<Props> = ({
         imageUrl="textures/conveyor.png"
         onClick={onClick}
     >
-        {cell.containedItems.top.map((item) => (
-            <CellItem />
+        {cell.containedItems.top.map((item, index) => (
+            <CellItem key={`top${index}`} position="top" />
+        ))}
+        {cell.containedItems.center.map((item, index) => (
+            <CellItem key={`center${index}`} position="center" />
+        ))}
+        {cell.containedItems.bottom.map((item, index) => (
+            <CellItem key={`bottom${index}`} position="bottom" />
         ))}
     </RotableCell>
 )
